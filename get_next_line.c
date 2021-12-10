@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/03 01:43:34 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/10 05:42:43 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 00:16:35 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ static void	update_buffer_list(t_buffer *end, t_buffer **list, unsigned int i)
 }
 
 static char	*flush_buffer_list(register unsigned int nl_index,
-	register t_buffer **list)
+	register t_buffer **list, unsigned int *size)
 {
 	t_buffer				*cursor;
 	char					*new_line;
@@ -96,6 +96,7 @@ static char	*flush_buffer_list(register unsigned int nl_index,
 	if (nl_index == UINT_MAX)
 		return (free_all(list));
 	new_line = malloc(sizeof(char) * (nl_index + 1));
+	*size = nl_index;
 	if (new_line == NULL)
 		return (free_all(list));
 	new_line_cursor = new_line;
@@ -111,11 +112,10 @@ static char	*flush_buffer_list(register unsigned int nl_index,
 		}
 	}
 	*new_line_cursor = '\0';
-	update_buffer_list(cursor, list, i);
-	return (new_line);
+	return (update_buffer_list(cursor, list, i), new_line);
 }
 
-char	*get_next_line(int fd)
+char	*get_next_line(int fd, unsigned int *size)
 {
 	static t_buffer	*list = NULL;
 
@@ -125,5 +125,5 @@ char	*get_next_line(int fd)
 		if (list == NULL)
 			return (NULL);
 	}
-	return (flush_buffer_list(get_nl_index(fd, list), &list));
+	return (flush_buffer_list(get_nl_index(fd, list), &list, size));
 }

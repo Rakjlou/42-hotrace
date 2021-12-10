@@ -6,12 +6,14 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/03 01:43:34 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/10 05:02:31 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 00:39:39 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
+
+# define HASHMAP_SIZE 4194304
 
 # include <unistd.h>
 
@@ -29,10 +31,9 @@ typedef struct s_buffer
 	struct s_buffer	*next;
 }	t_buffer;
 
-char		*get_next_line(int fd);
+char		*get_next_line(int fd, unsigned int *size);
 void		free_node(t_buffer *node);
 char		*free_all(t_buffer **list);
 t_buffer	*next_node(t_buffer *list);
-char		*get_next_line(int fd);
 
 #endif
