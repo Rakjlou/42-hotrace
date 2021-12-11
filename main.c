@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/11 05:28:41 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 05:30:30 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,6 @@ static void	print_val(t_hashmap (*map)[HASHMAP_SIZE], char *key)
 		write(STDOUT_FILENO, kv->val, kv->val_len);
 	else
 	{
-		write(STDERR_FILENO, "COLLISION\n", 10);
 		coll = (*map)[hash].collision;
 		while (coll)
 		{
