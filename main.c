@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/11 05:30:30 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 06:00:17 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,21 +43,9 @@ static inline unsigned int	haschich(char *key)
 	return (hache % HASHMAP_SIZE);
 }
 
-static void	store_collision_keyval(t_hashmap (*map)[HASHMAP_SIZE],
-	char *key, char *val, unsigned int val_len)
+static inline void	store_collision_keyval(t_collision **collision_list,
+	t_collision *new_collision)
 {
-	unsigned int	hash;
-	t_collision		*new_collision;
-	t_collision		**collision_list;
-
-	hash = haschich(key);
-	new_collision = malloc(sizeof(t_collision));
-	if (new_collision == NULL)
-		return ;
-	new_collision->kv.key = key;
-	new_collision->kv.val = val;
-	new_collision->kv.val_len = val_len;
-	collision_list = &(*map)[hash].collision;
 	if (collision_list == NULL)
 		*collision_list = new_collision;
 	else
@@ -72,11 +60,20 @@ static t_state	store_keyval(t_hashmap (*map)[HASHMAP_SIZE],
 {
 	unsigned int		hash;
 	t_keyval			*kv;
+	t_collision			*new_collision;
 
 	hash = haschich(key);
 	kv = &(*map)[hash].kv;
 	if (kv->key != NULL)
-		store_collision_keyval(map, key, val, val_len);
+	{
+		new_collision = malloc(sizeof(t_collision));
+		if (new_collision == NULL)
+			return (LOAD_KEY);
+		new_collision->kv.key = key;
+		new_collision->kv.val = val;
+		new_collision->kv.val_len = val_len;
+		store_collision_keyval(&(*map)[hash].collision, new_collision);
+	}
 	else
 	{
 		kv->key = key;
@@ -99,24 +96,19 @@ static void	print_val(t_hashmap (*map)[HASHMAP_SIZE], char *key)
 	else
 	{
 		coll = (*map)[hash].collision;
-		while (coll)
-		{
-			if (ft_strcmp(key, coll->kv.key) == 0)
-			{
-				write(STDOUT_FILENO, coll->kv.val, coll->kv.val_len);
-				return ;
-			}
+		while (coll && ft_strcmp(key, coll->kv.key) != 0)
 			coll = coll->next;
-		}
+		if (coll)
+			write(STDOUT_FILENO, coll->kv.val, coll->kv.val_len);
 	}
 }
 
 int	main(void)
 {
 	char				*key;
+	char				*line;
 	unsigned int		line_len;
-	register char		*line;
-	register t_state	state;
+	t_state				state;
 	static t_hashmap	map[HASHMAP_SIZE] = {0};
 
 	state = LOAD_KEY;
