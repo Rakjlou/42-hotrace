@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/11 01:20:17 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 03:36:51 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,21 @@
 #include "hotrace.h"
 #include <stdio.h> // REMOVE ME
 #include <stdlib.h>
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	const unsigned char	*cs1;
+	const unsigned char	*cs2;
+
+	cs1 = (const unsigned char *)s1;
+	cs2 = (const unsigned char *)s2;
+	while (*cs1 == *cs2 && *cs1 != '\0' && *cs2 != '\0')
+	{
+		++cs1;
+		++cs2;
+	}
+	return (*cs1 - *cs2);
+}
 
 static unsigned int	haschich(char *key)
 {
@@ -31,6 +46,30 @@ static unsigned int	haschich(char *key)
 	return (hache % HASHMAP_SIZE);
 }
 
+static void	store_collision_keyval(t_hashmap (*map)[HASHMAP_SIZE],
+	char *key, char *val, unsigned int val_len)
+{
+	unsigned int	hash;
+	t_collision		*new_collision;
+	t_collision		**collision_list;
+
+	hash = haschich(key);
+	new_collision = malloc(sizeof(t_collision));
+	if (new_collision == NULL)
+		return ;
+	new_collision->kv.key = key;
+	new_collision->kv.val = val;
+	new_collision->kv.val_len = val_len;
+	collision_list = &(*map)[hash].collision;
+	if (collision_list == NULL)
+		*collision_list = new_collision;
+	else
+	{
+		new_collision->next = *collision_list;
+		*collision_list = new_collision;
+	}
+}
+
 static t_state	store_keyval(t_hashmap (*map)[HASHMAP_SIZE],
 	char *key, char *val, unsigned int val_len)
 {
@@ -40,7 +79,7 @@ static t_state	store_keyval(t_hashmap (*map)[HASHMAP_SIZE],
 	hash = haschich(key);
 	kv = &(*map)[hash].kv;
 	if (kv->key != NULL)
-		puts("COLLISION");
+		store_collision_keyval(map, key, val, val_len);
 	else
 	{
 		kv->key = key;
@@ -54,11 +93,26 @@ static void	print_val(t_hashmap (*map)[HASHMAP_SIZE], char *key)
 {
 	unsigned int	hash;
 	t_keyval		*kv;
+	t_collision		*coll;
 
 	hash = haschich(key);
 	kv = &(*map)[hash].kv;
-	// strcmp pour verif key
-	write(STDOUT_FILENO, kv->val, kv->val_len);
+	if (ft_strcmp(key, kv->key) == 0)
+		write(STDOUT_FILENO, kv->val, kv->val_len);
+	else
+	{
+		write(STDERR_FILENO, "COLLISION\n", 10);
+		coll = (*map)[hash].collision;
+		while (coll)
+		{
+			if (ft_strcmp(key, coll->kv.key) == 0)
+			{
+				write(STDOUT_FILENO, coll->kv.val, coll->kv.val_len);
+				return ;
+			}
+			coll = coll->next;
+		}
+	}
 }
 
 /*

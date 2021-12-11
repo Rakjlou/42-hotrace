@@ -6,12 +6,14 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:59:10 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/11 00:35:45 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 02:41:28 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HOTRACE_H
 # define HOTRACE_H
+
+# define HASHMAP_SIZE 4194304
 
 typedef enum e_state
 {
