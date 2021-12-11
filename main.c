@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/11 06:03:38 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 06:30:34 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static inline void	store_collision_keyval(t_collision **collision_list,
 	}
 }
 
-static t_state	store_keyval(t_hashmap (*map)[HASHMAP_SIZE],
+static t_state	store_keyval(t_hashmap map[HASHMAP_SIZE],
 	char *key, char *val, unsigned int val_len)
 {
 	unsigned int		hash;
@@ -63,7 +63,7 @@ static t_state	store_keyval(t_hashmap (*map)[HASHMAP_SIZE],
 	t_collision			*new_collision;
 
 	hash = haschich(key);
-	kv = &(*map)[hash].kv;
+	kv = &map[hash].kv;
 	if (kv->key != NULL)
 	{
 		new_collision = malloc(sizeof(t_collision));
@@ -72,7 +72,7 @@ static t_state	store_keyval(t_hashmap (*map)[HASHMAP_SIZE],
 		new_collision->kv.key = key;
 		new_collision->kv.val = val;
 		new_collision->kv.val_len = val_len;
-		store_collision_keyval(&(*map)[hash].collision, new_collision);
+		store_collision_keyval(&map[hash].collision, new_collision);
 	}
 	else
 	{
@@ -83,19 +83,19 @@ static t_state	store_keyval(t_hashmap (*map)[HASHMAP_SIZE],
 	return (LOAD_KEY);
 }
 
-static void	print_val(t_hashmap (*map)[HASHMAP_SIZE], char *key)
+static void	print_val(t_hashmap map[HASHMAP_SIZE], char *key)
 {
 	unsigned int	hash;
 	t_keyval		*kv;
 	t_collision		*coll;
 
 	hash = haschich(key);
-	kv = &(*map)[hash].kv;
+	kv = &map[hash].kv;
 	if (ft_strcmp(key, kv->key) == 0)
 		write(STDOUT_FILENO, kv->val, kv->val_len);
 	else
 	{
-		coll = (*map)[hash].collision;
+		coll = map[hash].collision;
 		while (coll && ft_strcmp(key, coll->kv.key) != 0)
 			coll = coll->next;
 		if (coll)
@@ -125,9 +125,8 @@ int	main(void)
 			state = LOAD_VALUE;
 		}
 		else if (state == LOAD_VALUE)
-			state = store_keyval(&map, key, line, line_len);
+			state = store_keyval(map, key, line, line_len);
 		else if (state == PRINT)
-			print_val(&map, line);
+			print_val(map, line);
 	}
-	return (0);
 }
