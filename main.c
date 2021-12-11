@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/11 06:00:17 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 06:03:38 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ int	main(void)
 		line = get_next_line(STDIN_FILENO, &line_len);
 		if (line == NULL)
 			break ;
-		if (line_len == 1 && line[0] == '\n')
+		else if (line_len == 1 && line[0] == '\n')
 			state = PRINT;
 		else if (state == LOAD_KEY)
 		{
@@ -129,4 +129,5 @@ int	main(void)
 		else if (state == PRINT)
 			print_val(&map, line);
 	}
+	return (0);
 }
