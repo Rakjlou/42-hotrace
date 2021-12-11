@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/11 03:36:51 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/11 05:28:41 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,17 @@
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
-	const unsigned char	*cs1;
-	const unsigned char	*cs2;
-
-	cs1 = (const unsigned char *)s1;
-	cs2 = (const unsigned char *)s2;
-	while (*cs1 == *cs2 && *cs1 != '\0' && *cs2 != '\0')
+	while (*s1 == *s2)
 	{
-		++cs1;
-		++cs2;
+		if (*s1 == 0)
+			return (0);
+		++s1;
+		++s2;
 	}
-	return (*cs1 - *cs2);
+	return (*s1 - *s2);
 }
 
-static unsigned int	haschich(char *key)
+static inline unsigned int	haschich(char *key)
 {
 	unsigned int	hache;
 	int				c;
@@ -115,9 +112,6 @@ static void	print_val(t_hashmap (*map)[HASHMAP_SIZE], char *key)
 	}
 }
 
-/*
-TODO: Adapter GNL pour garder la length des valeurs et opti l'appel final à read
-*/
 int	main(void)
 {
 	char				*key;
