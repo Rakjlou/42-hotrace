@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/11 07:15:06 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/12 02:18:25 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ static void	print_val(t_hashmap map[HASHMAP_SIZE], char *key)
 
 	hash = haschich(key);
 	kv = &map[hash].kv;
-	if (ft_strcmp(key, kv->key) == 0)
+	if (kv->key && ft_strcmp(key, kv->key) == 0)
 		write(STDOUT_FILENO, kv->val, kv->val_len);
 	else
 	{
