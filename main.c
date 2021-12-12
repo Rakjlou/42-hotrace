@@ -6,13 +6,12 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/12 04:48:39 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/12 10:08:25 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include "hotrace.h"
-#include <stdio.h> // REMOVE ME
 #include <stdlib.h>
 #include <stdint.h>
 
