@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/12 02:41:17 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/12 05:46:00 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,6 @@
 #include "hotrace.h"
 #include <stdio.h> // REMOVE ME
 #include <stdlib.h>
-
-static inline int	ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 == *s2)
-	{
-		if (*s1 == 0)
-			return (0);
-		++s1;
-		++s2;
-	}
-	return (*s1 - *s2);
-}
-
-int	ft_strcmp_void(void *v1, void *v2)
-{
-	return (ft_strcmp((const char *)v1, (const char *)v2));
-}
-
-static inline t_state	free_line_set_print_state(char *line)
-{
-	free(line);
-	return (PRINT);
-}
 
 static t_state	store_keyval(t_avl *tree,
 	char *key, char *val, unsigned int val_len)
@@ -70,7 +47,7 @@ static void	print_val(t_avl *tree, char *key, unsigned int len)
 	}
 }
 
-static void	avl_init(t_avl *tree,
+static inline void	avl_init(t_avl *tree,
 	int (*cmp)(void *, void *),
 	void (*free_key)(void *),
 	void (*free_data)(void *))
@@ -81,8 +58,7 @@ static void	avl_init(t_avl *tree,
 	tree->free_data = free_data;
 }
 
-
-void	free_avl_data(void *data)
+static void	free_avl_data(void *data)
 {
 	t_value	*value;
 
@@ -99,7 +75,7 @@ int	main(void)
 	char				*line;
 	unsigned int		line_len;
 
-	(state = LOAD_KEY, avl_init(&tree, ft_strcmp_void, free, free_avl_data));
+	state = (avl_init(&tree, ft_strcmp_void, free, free_avl_data), LOAD_KEY);
 	while (42)
 	{
 		line = get_next_line(STDIN_FILENO, &line_len);
