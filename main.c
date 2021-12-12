@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/12 01:54:11 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/12 02:41:17 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,22 @@ static t_state	store_keyval(t_avl *tree,
 	return (LOAD_KEY);
 }
 
-static void	print_val(t_avl *tree, char *key)
+static void	print_val(t_avl *tree, char *key, unsigned int len)
 {
 	t_avl_node	*node;
 	t_value		*val;
 
 	node = avl_find(key, tree, tree->root);
 	if (node == NULL)
-		return ;
-	val = (t_value *)node->data;
-	write(STDOUT_FILENO, val->val, val->len);
+	{
+		write(STDOUT_FILENO, key, len - 1);
+		write(STDOUT_FILENO, ": Not found.\n", 13);
+	}
+	else
+	{
+		val = (t_value *)node->data;
+		write(STDOUT_FILENO, val->val, val->len);
+	}
 }
 
 static void	avl_init(t_avl *tree,
@@ -75,6 +81,16 @@ static void	avl_init(t_avl *tree,
 	tree->free_data = free_data;
 }
 
+
+void	free_avl_data(void *data)
+{
+	t_value	*value;
+
+	value = (t_value *)data;
+	free(value->val);
+	free(data);
+}
+
 int	main(void)
 {
 	t_state				state;
@@ -83,8 +99,7 @@ int	main(void)
 	char				*line;
 	unsigned int		line_len;
 
-	state = LOAD_KEY;
-	avl_init(&tree, ft_strcmp_void, free, free);
+	(state = LOAD_KEY, avl_init(&tree, ft_strcmp_void, free, free_avl_data));
 	while (42)
 	{
 		line = get_next_line(STDIN_FILENO, &line_len);
@@ -100,6 +115,7 @@ int	main(void)
 		else if (state == LOAD_VALUE)
 			state = store_keyval(&tree, key, line, line_len);
 		else if (state == PRINT)
-			(print_val(&tree, line), free(line));
+			(print_val(&tree, line, line_len), free(line));
 	}
+	avl_dispose(&tree, tree.root);
 }
