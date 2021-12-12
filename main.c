@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/12 04:48:39 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/12 06:44:49 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,13 @@
 #include <stdio.h> // REMOVE ME
 #include <stdlib.h>
 
-static inline int	ft_strcmp(const char *s1, const char *s2)
+static void	free_avl_data(void *data)
 {
-	while (*s1 == *s2)
-	{
-		if (*s1 == 0)
-			return (0);
-		++s1;
-		++s2;
-	}
-	return (*s1 - *s2);
+	t_value	*value;
+
+	value = (t_value *)data;
+	free(value->val);
+	free(data);
 }
 
 static inline unsigned int	haschich(char *key)
@@ -48,19 +45,16 @@ static t_state	store_keyval(t_hashmap map[HASHMAP_SIZE],
 {
 	unsigned int		hash;
 	t_keyval			*kv;
-	t_collision			*new_collision;
 
 	hash = haschich(key);
 	kv = &map[hash].kv;
 	if (kv->key != NULL)
 	{
-		new_collision = malloc(sizeof(t_collision));
-		if (new_collision == NULL)
+		if (map[hash].collision == NULL)
+			map[hash].collision = new_avl(ft_strcmp_void, free, free_avl_data);
+		if (map[hash].collision == NULL)
 			return (LOAD_KEY);
-		new_collision->kv.key = key;
-		new_collision->kv.val = val;
-		new_collision->kv.val_len = val_len;
-		store_collision_keyval(&map[hash].collision, new_collision);
+		return (store_collision_keyval(map[hash].collision, key, val, val_len));
 	}
 	else
 	{
@@ -75,25 +69,26 @@ static void	print_val(t_hashmap map[HASHMAP_SIZE], char *key, unsigned int len)
 {
 	unsigned int	hash;
 	t_keyval		*kv;
-	t_collision		*coll;
+	t_avl_node		*node;
+	t_value			*value;
 
 	hash = haschich(key);
 	kv = &map[hash].kv;
 	if (kv->key && ft_strcmp(key, kv->key) == 0)
 		write(STDOUT_FILENO, kv->val, kv->val_len);
-	else
+	else if (map[hash].collision)
 	{
-		coll = map[hash].collision;
-		while (coll && ft_strcmp(key, coll->kv.key) != 0)
-			coll = coll->next;
-		if (coll)
-			write(STDOUT_FILENO, coll->kv.val, coll->kv.val_len);
-		else
+		node = avl_find(key, map[hash].collision, map[hash].collision->root);
+		if (node)
 		{
-			write(STDOUT_FILENO, key, len - 1);
-			write(STDOUT_FILENO, ": Not found.\n", 13);
+			value = (t_value *)node->data;
+			write(STDOUT_FILENO, value->val, value->len);
 		}
+		else
+			print_not_found(key, len);
 	}
+	else
+		print_not_found(key, len);
 }
 
 int	main(void)
