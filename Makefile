@@ -6,7 +6,7 @@
 #    By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/10 23:54:46 by nsierra-          #+#    #+#              #
-#    Updated: 2021/12/12 00:40:00 by nsierra-         ###   ########.fr        #
+#    Updated: 2021/12/12 01:40:17 by nsierra-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ NAME = hotrace
 
 SRC = get_next_line.c \
 	get_next_line_utils.c \
+	avl.c \
 	main.c
 
 OBJ = $(SRC:.c=.o)

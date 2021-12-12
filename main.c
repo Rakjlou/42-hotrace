@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/12 00:40:44 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/12 01:54:11 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,31 +27,64 @@ static inline int	ft_strcmp(const char *s1, const char *s2)
 	return (*s1 - *s2);
 }
 
+int	ft_strcmp_void(void *v1, void *v2)
+{
+	return (ft_strcmp((const char *)v1, (const char *)v2));
+}
+
 static inline t_state	free_line_set_print_state(char *line)
 {
 	free(line);
 	return (PRINT);
 }
 
-static t_state	store_keyval(t_tree *tree,
+static t_state	store_keyval(t_avl *tree,
 	char *key, char *val, unsigned int val_len)
 {
+	t_value	*value;
+
+	value = malloc(sizeof(t_value));
+	if (value == NULL)
+		return (LOAD_KEY);
+	value->val = val;
+	value->len = val_len;
+	tree->root = avl_insert(key, value, tree, tree->root);
+	return (LOAD_KEY);
 }
 
-static void	print_val(t_tree *tree, char *key)
+static void	print_val(t_avl *tree, char *key)
 {
+	t_avl_node	*node;
+	t_value		*val;
+
+	node = avl_find(key, tree, tree->root);
+	if (node == NULL)
+		return ;
+	val = (t_value *)node->data;
+	write(STDOUT_FILENO, val->val, val->len);
+}
+
+static void	avl_init(t_avl *tree,
+	int (*cmp)(void *, void *),
+	void (*free_key)(void *),
+	void (*free_data)(void *))
+{
+	tree->root = NULL;
+	tree->cmp = cmp;
+	tree->free_key = free_key;
+	tree->free_data = free_data;
 }
 
 int	main(void)
 {
 	t_state				state;
-	t_tree				*tree;
+	t_avl				tree;
 	char				*key;
 	char				*line;
 	unsigned int		line_len;
 
 	state = LOAD_KEY;
-	tree = NULL;
+	avl_init(&tree, ft_strcmp_void, free, free);
 	while (42)
 	{
 		line = get_next_line(STDIN_FILENO, &line_len);
@@ -65,8 +98,8 @@ int	main(void)
 			state = LOAD_VALUE;
 		}
 		else if (state == LOAD_VALUE)
-			state = store_keyval(map, key, line, line_len);
+			state = store_keyval(&tree, key, line, line_len);
 		else if (state == PRINT)
-			(print_val(map, line), free(line));
+			(print_val(&tree, line), free(line));
 	}
 }
