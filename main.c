@@ -14,6 +14,7 @@
 #include "hotrace.h"
 #include <stdio.h> // REMOVE ME
 #include <stdlib.h>
+#include <stdint.h>
 
 static inline int	ft_strcmp(const char *s1, const char *s2)
 {
@@ -102,7 +103,7 @@ int	main(void)
 	char				*line;
 	unsigned int		line_len;
 	t_state				state;
-	static t_hashmap	map[HASHMAP_SIZE] = {0};
+	static t_hashmap	map[HASHMAP_SIZE] = {{{0}, 0}};
 
 	state = LOAD_KEY;
 	while (42)
