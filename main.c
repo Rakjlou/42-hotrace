@@ -6,7 +6,7 @@
 /*   By: nsierra- <nsierra-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/10 23:56:48 by nsierra-          #+#    #+#             */
-/*   Updated: 2021/12/12 02:18:25 by nsierra-         ###   ########.fr       */
+/*   Updated: 2021/12/12 02:30:27 by nsierra-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static t_state	store_keyval(t_hashmap map[HASHMAP_SIZE],
 	return (LOAD_KEY);
 }
 
-static void	print_val(t_hashmap map[HASHMAP_SIZE], char *key)
+static void	print_val(t_hashmap map[HASHMAP_SIZE], char *key, unsigned int len)
 {
 	unsigned int	hash;
 	t_keyval		*kv;
@@ -81,13 +81,18 @@ static void	print_val(t_hashmap map[HASHMAP_SIZE], char *key)
 	kv = &map[hash].kv;
 	if (kv->key && ft_strcmp(key, kv->key) == 0)
 		write(STDOUT_FILENO, kv->val, kv->val_len);
-	else
+	else if (kv->key)
 	{
 		coll = map[hash].collision;
 		while (coll && ft_strcmp(key, coll->kv.key) != 0)
 			coll = coll->next;
 		if (coll)
 			write(STDOUT_FILENO, coll->kv.val, coll->kv.val_len);
+	}
+	else
+	{
+		write(STDOUT_FILENO, key, len - 1);
+		write(STDOUT_FILENO, ": Not found.\n", 13);
 	}
 }
 
@@ -115,7 +120,7 @@ int	main(void)
 		else if (state == LOAD_VALUE)
 			state = store_keyval(map, key, line, line_len);
 		else if (state == PRINT)
-			(print_val(map, line), free(line));
+			(print_val(map, line, line_len), free(line));
 	}
 	free_hashmap(map);
 }
